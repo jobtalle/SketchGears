@@ -11,7 +11,7 @@ class Part {
         this.x = x;
         this.y = y;
 
-
+        console.log(x + ", " + y);
     }
 
     /**

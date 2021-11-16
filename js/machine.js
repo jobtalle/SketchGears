@@ -12,6 +12,7 @@ class Machine {
      * @param {Random} random A randomizer
      */
     constructor(width, height, svg, random) {
+        const scale = 30;
         const uri = svg.getAttribute("xmlns");
         const svgMaker = new SVGMaker(uri);
         const layerContainer = document.createElementNS(uri, "g");
@@ -20,26 +21,70 @@ class Machine {
         const gridDimensions = Machine.GRID_RADIUS * 2 + 1;
         const grid = new Array(gridDimensions * gridDimensions).fill(null);
         const initial = grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
-            gridDimensions,
-            gridDimensions);
+            Machine.GRID_RADIUS,
+            Machine.GRID_RADIUS);
 
-        const open = [initial];
+        const open = [
+            grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
+                Machine.GRID_RADIUS,
+                Machine.GRID_RADIUS),
+            grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
+                Machine.GRID_RADIUS + 1,
+                Machine.GRID_RADIUS),
+            grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
+                Machine.GRID_RADIUS - 1,
+                Machine.GRID_RADIUS),
+            grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
+                Machine.GRID_RADIUS,
+                Machine.GRID_RADIUS - 1),
+            grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
+                Machine.GRID_RADIUS,
+                Machine.GRID_RADIUS + 1),
+            grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
+                Machine.GRID_RADIUS + 1,
+                Machine.GRID_RADIUS - 1),
+            grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
+                Machine.GRID_RADIUS - 1,
+                Machine.GRID_RADIUS + 1)
+        ];
 
-        for (const part of open)
+        let part = null;
+
+        while (part = open.pop()) {
             part.makeElement(
                 svgMaker,
-                gridDimensions,
-                gridDimensions,
+                this.getX(part.x),
+                this.getY(part.x, part.y),
                 layerMoving,
                 layerForeground);
+        }
 
         layerContainer.setAttribute("transform",
             "translate(" +
-            (width * .5).toString() + "," +
-            (height * .5).toString() + ")" +
-            "scale(32)");
+            (width * .5 - scale * this.getX(Machine.GRID_RADIUS)).toString() + "," +
+            (height * .5 - scale * this.getY(Machine.GRID_RADIUS, Machine.GRID_RADIUS)).toString() + ")" +
+            "scale(" + scale.toString() + ")");
         layerContainer.appendChild(layerMoving);
         layerContainer.appendChild(layerForeground);
         svg.appendChild(layerContainer);
+    }
+
+    /**
+     * Convert a grid to a world coordinate
+     * @param {number} x The Y coordinate
+     * @returns {number} The world coordinate
+     */
+    getX(x) {
+        return x * Math.sqrt(3);
+    }
+
+    /**
+     * Convert a grid to a world coordinate
+     * @param {number} x The Y coordinate
+     * @param {number} y The Y coordinate
+     * @returns {number} The world coordinate
+     */
+    getY(x, y) {
+        return y * 2 + x;
     }
 }
