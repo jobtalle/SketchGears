@@ -12,7 +12,7 @@ class Machine {
      * @param {Random} random A randomizer
      */
     constructor(width, height, svg, random) {
-        const scale = 256;
+        const scale = 80;
         const uri = svg.getAttribute("xmlns");
         const svgMaker = new SVGMaker(uri);
         const layerContainer = document.createElementNS(uri, "g");
@@ -20,11 +20,12 @@ class Machine {
         const layerForeground = document.createElementNS(uri, "g");
         const gridDimensions = Machine.GRID_RADIUS * 2 + 1;
         const grid = new Array(gridDimensions * gridDimensions).fill(null);
-        const initial = grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new PartGear(
+
+        this.root = grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new PartGear(
             Machine.GRID_RADIUS,
             Machine.GRID_RADIUS);
 
-        const open = [initial];
+        const open = [this.root];
 
         let part = null;
 
@@ -71,6 +72,6 @@ class Machine {
      * @param {number} dt The time delta in seconds
      */
     update(dt) {
-
+        this.root.update(dt);
     }
 }

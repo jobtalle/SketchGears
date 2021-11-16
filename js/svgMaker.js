@@ -14,13 +14,10 @@ class SVGMaker {
      * Make a part group
      * @param {number} x The world X coordinate
      * @param {number} y The world Y coordinate
+     * @returns {SVGGroup} The group
      */
     makePartGroup(x, y) {
-        const element = document.createElementNS(this.uri, "g");
-
-        element.setAttribute("transform", "translate(" + x.toString() + "," + y.toString() + ")");
-
-        return element;
+        return document.createElementNS(this.uri, "g");
     }
 
     /**
@@ -28,16 +25,17 @@ class SVGMaker {
      * @param {number} x The world X coordinate
      * @param {number} y The world Y coordinate
      * @param {number} radius The gear radius
-     * @returns {SVGElement} The SVG element
+     * @returns {SVGGroup} The SVG element
      */
     makeGear(x, y, radius) {
         const group = this.makePartGroup(x, y);
         const element = document.createElementNS(this.uri, "path");
-        const teeth = 10;
-        const radiusInner = radius - .1;
-        const radiusOuter = radius + .1;
+        const teeth = 14;
         const bevel = 0.07;
-        let path = "M " +
+        const depth = .17;
+        const radiusInner = radius - depth * .5;
+        const radiusOuter = radius + depth * .5;
+        let path = "M" +
             (Math.cos(Math.PI * 2 * (teeth - bevel)) * radiusInner).toFixed(4) + "," +
             (Math.sin(Math.PI * 2 * (teeth - bevel)) * radiusInner).toFixed(4) + " ";
 
@@ -47,30 +45,42 @@ class SVGMaker {
             const a2 = Math.PI * 2 * (tooth + 1 - bevel) / teeth;
             const a3 = Math.PI * 2 * (tooth + 1 + bevel) / teeth;
 
-            path += "A " +
+            path += "A" +
                 radiusInner.toFixed(4) + "," +
                 radiusInner.toFixed(4) + " " +
                 "0 0 1 " +
                 (Math.cos(a0) * radiusInner).toFixed(4) + "," +
                 (Math.sin(a0) * radiusInner).toFixed(4) + " ";
-            path += "L " +
+            path += "L" +
                 (Math.cos(a1) * radiusOuter).toFixed(4) + "," +
                 (Math.sin(a1) * radiusOuter).toFixed(4) + " ";
-            path += "A " +
+            path += "A" +
                 radiusOuter.toFixed(4) + "," +
                 radiusOuter.toFixed(4) + " " +
                 "0 0 1 " +
                 (Math.cos(a2) * radiusOuter).toFixed(4) + "," +
                 (Math.sin(a2) * radiusOuter).toFixed(4) + " ";
-            path += "L " +
+            path += "L" +
                 (Math.cos(a3) * radiusInner).toFixed(4) + "," +
                 (Math.sin(a3) * radiusInner).toFixed(4) + " ";
         }
 
-        element.setAttributeNS(null, "d", path + "Z");
+        // path += "M" + (radiusInner * .5).toFixed(4) + ",0";
+        // path += "A" +
+        //     (radiusInner * .5).toFixed(4) + "," +
+        //     (radiusInner * .5).toFixed(4) + " " +
+        //     "0 0 0 " +
+        //     (radiusInner * -.5).toFixed(4) + ",0";
+        // path += "A" +
+        //     (radiusInner * .5).toFixed(4) + "," +
+        //     (radiusInner * .5).toFixed(4) + " " +
+        //     "0 0 0 " +
+        //     (radiusInner * .5).toFixed(4) + ",0";
+
+        element.setAttributeNS(null, "d", path);
 
         group.appendChild(element);
 
-        return group;
+        return new SVGGroup(this.uri, group, x, y);
     }
 }

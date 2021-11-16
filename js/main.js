@@ -8,7 +8,7 @@
     let lastTime = performance.now();
 
     const loop = time => {
-        machine.update(.001 * (time - lastTime));
+        machine.update(Math.min(.1, .001 * (time - lastTime)));
         lastTime = time;
 
         requestAnimationFrame(loop);

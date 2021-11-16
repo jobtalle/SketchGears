@@ -2,6 +2,39 @@
  * A gear
  */
 class PartGear extends Part {
+    static SPEED = 80;
+
+    /**
+     * Construct a part
+     * @param {number} x The X position on the grid
+     * @param {number} y The Y position on the grid
+     */
+    constructor(x, y) {
+        super(x, y);
+
+        this.angle = 0;
+        this.gear = null;
+    }
+
+    /**
+     * Update the part
+     * @param {number} dt The time delta in seconds
+     */
+    update(dt) {
+        const delta = dt * PartGear.SPEED;
+
+        this.angle += delta;
+
+        while (this.angle > 360)
+            this.angle -= 360;
+
+        while (this.angle < 0)
+            this.angle += 360;
+
+        this.gear.angle = this.angle;
+        this.gear.updateTransform();
+    }
+
     /**
      * Make the element for this part
      * @param {SVGMaker} svgMaker An SVG maker
@@ -12,7 +45,9 @@ class PartGear extends Part {
      * @returns {Part} This part
      */
     makeElement(svgMaker, x, y, layerMoving, layerForeground) {
-        layerMoving.appendChild(svgMaker.makeGear(x, y, 1));
+        this.gear = svgMaker.makeGear(x, y, 1);
+
+        layerMoving.appendChild(this.gear.group);
 
         return this;
     }
