@@ -12,7 +12,7 @@ class Machine {
      * @param {Random} random A randomizer
      */
     constructor(width, height, svg, random) {
-        const scale = 30;
+        const scale = 256;
         const uri = svg.getAttribute("xmlns");
         const svgMaker = new SVGMaker(uri);
         const layerContainer = document.createElementNS(uri, "g");
@@ -20,33 +20,11 @@ class Machine {
         const layerForeground = document.createElementNS(uri, "g");
         const gridDimensions = Machine.GRID_RADIUS * 2 + 1;
         const grid = new Array(gridDimensions * gridDimensions).fill(null);
-        const initial = grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
+        const initial = grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new PartGear(
             Machine.GRID_RADIUS,
             Machine.GRID_RADIUS);
 
-        const open = [
-            grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
-                Machine.GRID_RADIUS,
-                Machine.GRID_RADIUS),
-            grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
-                Machine.GRID_RADIUS + 1,
-                Machine.GRID_RADIUS),
-            grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
-                Machine.GRID_RADIUS - 1,
-                Machine.GRID_RADIUS),
-            grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
-                Machine.GRID_RADIUS,
-                Machine.GRID_RADIUS - 1),
-            grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
-                Machine.GRID_RADIUS,
-                Machine.GRID_RADIUS + 1),
-            grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
-                Machine.GRID_RADIUS + 1,
-                Machine.GRID_RADIUS - 1),
-            grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new Part(
-                Machine.GRID_RADIUS - 1,
-                Machine.GRID_RADIUS + 1)
-        ];
+        const open = [initial];
 
         let part = null;
 
@@ -86,5 +64,13 @@ class Machine {
      */
     getY(x, y) {
         return y * 2 + x;
+    }
+
+    /**
+     * Update the machine
+     * @param {number} dt The time delta in seconds
+     */
+    update(dt) {
+
     }
 }
