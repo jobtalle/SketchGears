@@ -19,10 +19,11 @@ class Machine {
 
         this.root = new PartGear(0, 0, 16);
 
-        let budget = new Budget();
+        let levels = 3;
+        let budget = new Budget(5);
         let open = [this.root];
 
-        while (open.length > 0) {
+        while (open.length > 0 && levels !== 0) {
             const nextParts = [];
             let part = null;
 
@@ -32,7 +33,12 @@ class Machine {
             while (part = open.pop())
                 nextParts.push(...part.reproduce(budget));
 
-            open = nextParts;
+            if (--levels === 0) {
+                for (const part of nextParts)
+                    part.makeElement(svgMaker, layerMoving, layerForeground);
+            }
+            else
+                open = nextParts;
         }
 
         layerContainer.setAttribute("transform",

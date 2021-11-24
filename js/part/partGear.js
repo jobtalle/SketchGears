@@ -3,6 +3,7 @@
  */
 class PartGear extends Part {
     static TOOTH_STRIDE = .075;
+    static SPACING = 0.02;
 
     /**
      * Construct a part
@@ -51,7 +52,7 @@ class PartGear extends Part {
         this.gear.updateTransform();
 
         for (const gear of this.gears)
-            gear.rotate(-delta);
+            gear.rotate(-delta * this.ratio);
     }
 
     /**
@@ -74,15 +75,18 @@ class PartGear extends Part {
      * @returns {PartGear} A new gear
      */
     reproduceGear() {
-        const angle = Math.random() * Math.PI * 2;
-        const teeth = Math.round(6 + Math.random() * 12);
+        const angleOffset = Math.random();
+        const angle = angleOffset * Math.PI * 2;
+        const teeth = Math.round(8 + Math.random() * 10);
         const radius = PartGear.getRadius(teeth);
+        const ratio = this.teeth / teeth;
+        const toothOffset = (teeth & 1) * 180 / teeth;
         const gear = new PartGear(
-            this.x + Math.cos(angle) * (this.radius + radius),
-            this.y + Math.sin(angle) * (this.radius + radius),
+            this.x + Math.cos(angle) * (this.radius + radius + PartGear.SPACING),
+            this.y + Math.sin(angle) * (this.radius + radius + PartGear.SPACING),
             teeth,
-            this.ratio * (this.teeth / teeth),
-            this.offset);
+            ratio,
+            angleOffset * 360 + angleOffset * ratio * 360 + toothOffset - this.offset * ratio);
 
         this.gears.push(gear);
 

@@ -4,8 +4,9 @@
 class Budget {
     /**
      * Construct the budget
+     * @param {number} parts The maximum number of parts
      */
-    constructor() {
-        this.parts = 10;
+    constructor(parts) {
+        this.parts = parts;
     }
 }
