@@ -20,16 +20,15 @@ class Part {
      * @returns {Part} This part
      */
     makeElement(svgMaker, layerMoving, layerForeground) {
-        layerMoving.appendChild(svgMaker.makeGear(this.x, this.y, 1));
-
         return this;
     }
 
     /**
      * Create a new generation of parts
+     * @param {Budget} budget A part budget
      * @returns {Part[]} An array of parts
      */
-    reproduce() {
+    reproduce(budget) {
         return [];
     }
 }

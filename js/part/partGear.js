@@ -2,19 +2,36 @@
  * A gear
  */
 class PartGear extends Part {
+    static TOOTH_STRIDE = .075;
+
     /**
      * Construct a part
      * @param {number} x The X position on the grid
      * @param {number} y The Y position on the grid
+     * @param {number} teeth The number of teeth
+     * @param {number} [ratio] The transmission ratio
+     * @param {number} [offset] The gear offset in degrees
      */
-    constructor(x, y) {
+    constructor(x, y, teeth, ratio = 1, offset = 0) {
         super(x, y);
 
         this.angle = 0;
         this.gear = null;
-        this.teeth = 15;
+        this.teeth = teeth;
+        this.radius = PartGear.getRadius(teeth);
+        this.ratio = ratio;
+        this.offset = offset;
 
         this.gears = [];
+    }
+
+    /**
+     * Calculate the gear radius for a given number of teeth
+     * @param {number} teeth The number of teeth
+     * @returns {number} The radius
+     */
+    static getRadius(teeth) {
+        return teeth * PartGear.TOOTH_STRIDE;
     }
 
     /**
@@ -22,7 +39,7 @@ class PartGear extends Part {
      * @param delta
      */
     rotate(delta) {
-        this.angle += delta;
+        this.angle += delta * this.ratio;
 
         while (this.angle > 360)
             this.angle -= 360;
@@ -30,7 +47,7 @@ class PartGear extends Part {
         while (this.angle < 0)
             this.angle += 360;
 
-        this.gear.angle = this.angle;
+        this.gear.angle = this.angle + this.offset;
         this.gear.updateTransform();
 
         for (const gear of this.gears)
@@ -45,7 +62,7 @@ class PartGear extends Part {
      * @returns {Part} This part
      */
     makeElement(svgMaker, layerMoving, layerForeground) {
-        this.gear = svgMaker.makeGear(this.x, this.y, 1, this.teeth, .07, .15, 1 - .075 - .15);
+        this.gear = svgMaker.makeGear(this.x, this.y, this.radius, this.teeth, .07, .15, this.radius - .075 - .15);
 
         layerMoving.appendChild(this.gear.group);
 
@@ -58,9 +75,14 @@ class PartGear extends Part {
      */
     reproduceGear() {
         const angle = Math.random() * Math.PI * 2;
+        const teeth = Math.round(6 + Math.random() * 12);
+        const radius = PartGear.getRadius(teeth);
         const gear = new PartGear(
-            this.x + Math.cos(angle) * 2,
-            this.y + Math.sin(angle) * 2);
+            this.x + Math.cos(angle) * (this.radius + radius),
+            this.y + Math.sin(angle) * (this.radius + radius),
+            teeth,
+            this.ratio * (this.teeth / teeth),
+            this.offset);
 
         this.gears.push(gear);
 
@@ -69,12 +91,18 @@ class PartGear extends Part {
 
     /**
      * Create a new generation of parts
+     * @param {Budget} budget A part budget
      * @returns {Part[]} An array of parts
      */
-    reproduce() {
-        if (Math.random() < .5)
-            return [this.reproduceGear()];
+    reproduce(budget) {
+        const gearCount = Math.min(Math.round(Math.random() * .3 + 1), budget.parts);
+        const parts = [];
 
-        return super.reproduce();
+        for (let i = 0; i < gearCount; ++i)
+            parts.push(this.reproduceGear());
+
+        budget.parts -= gearCount;
+
+        return parts;
     }
 }

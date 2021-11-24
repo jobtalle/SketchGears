@@ -17,8 +17,9 @@ class Machine {
         const layerMoving = document.createElementNS(uri, "g");
         const layerForeground = document.createElementNS(uri, "g");
 
-        this.root = new PartGear(0, 0);
+        this.root = new PartGear(0, 0, 16);
 
+        let budget = new Budget();
         let open = [this.root];
 
         while (open.length > 0) {
@@ -29,7 +30,7 @@ class Machine {
                 part.makeElement(svgMaker, layerMoving, layerForeground);
 
             while (part = open.pop())
-                nextParts.push(...part.reproduce());
+                nextParts.push(...part.reproduce(budget));
 
             open = nextParts;
         }
