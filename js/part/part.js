@@ -13,25 +13,23 @@ class Part {
     }
 
     /**
-     * Update the part
-     * @param {number} dt The time delta in seconds
-     */
-    update(dt) {
-
-    }
-
-    /**
      * Make the element for this part
      * @param {SVGMaker} svgMaker An SVG maker
-     * @param {number} x The X position
-     * @param {number} y The Y position
      * @param {SVGGElement} layerMoving The moving parts layer
      * @param {SVGGElement} layerForeground The foreground layer
      * @returns {Part} This part
      */
-    makeElement(svgMaker, x, y, layerMoving, layerForeground) {
-        layerMoving.appendChild(svgMaker.makeGear(x, y, 1));
+    makeElement(svgMaker, layerMoving, layerForeground) {
+        layerMoving.appendChild(svgMaker.makeGear(this.x, this.y, 1));
 
         return this;
+    }
+
+    /**
+     * Create a new generation of parts
+     * @returns {Part[]} An array of parts
+     */
+    reproduce() {
+        return [];
     }
 }

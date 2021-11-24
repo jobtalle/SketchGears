@@ -2,8 +2,6 @@
  * A machine
  */
 class Machine {
-    static GRID_RADIUS = 10;
-
     /**
      * Construct a machine
      * @param {number} width The width in pixels
@@ -18,30 +16,28 @@ class Machine {
         const layerContainer = document.createElementNS(uri, "g");
         const layerMoving = document.createElementNS(uri, "g");
         const layerForeground = document.createElementNS(uri, "g");
-        const gridDimensions = Machine.GRID_RADIUS * 2 + 1;
-        const grid = new Array(gridDimensions * gridDimensions).fill(null);
 
-        this.root = grid[Machine.GRID_RADIUS * gridDimensions + Machine.GRID_RADIUS] = new PartGear(
-            Machine.GRID_RADIUS,
-            Machine.GRID_RADIUS);
+        this.root = new PartGear(0, 0);
 
-        const open = [this.root];
+        let open = [this.root];
 
-        let part = null;
+        while (open.length > 0) {
+            const nextParts = [];
+            let part = null;
 
-        while (part = open.pop()) {
-            part.makeElement(
-                svgMaker,
-                this.getX(part.x),
-                this.getY(part.x, part.y),
-                layerMoving,
-                layerForeground);
+            for (const part of open)
+                part.makeElement(svgMaker, layerMoving, layerForeground);
+
+            while (part = open.pop())
+                nextParts.push(...part.reproduce());
+
+            open = nextParts;
         }
 
         layerContainer.setAttribute("transform",
             "translate(" +
-            (width * .5 - scale * this.getX(Machine.GRID_RADIUS)).toString() + "," +
-            (height * .5 - scale * this.getY(Machine.GRID_RADIUS, Machine.GRID_RADIUS)).toString() + ")" +
+            (width * .5).toString() + "," +
+            (height * .5).toString() + ")" +
             "scale(" + scale.toString() + ")");
         layerContainer.appendChild(layerMoving);
         layerContainer.appendChild(layerForeground);
@@ -49,29 +45,10 @@ class Machine {
     }
 
     /**
-     * Convert a grid to a world coordinate
-     * @param {number} x The Y coordinate
-     * @returns {number} The world coordinate
-     */
-    getX(x) {
-        return x * Math.sqrt(3);
-    }
-
-    /**
-     * Convert a grid to a world coordinate
-     * @param {number} x The Y coordinate
-     * @param {number} y The Y coordinate
-     * @returns {number} The world coordinate
-     */
-    getY(x, y) {
-        return y * 2 + x;
-    }
-
-    /**
      * Update the machine
      * @param {number} dt The time delta in seconds
      */
     update(dt) {
-        this.root.update(dt);
+        this.root.rotate(80 * dt);
     }
 }

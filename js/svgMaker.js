@@ -25,14 +25,22 @@ class SVGMaker {
      * @param {number} x The world X coordinate
      * @param {number} y The world Y coordinate
      * @param {number} radius The gear radius
+     * @param {number} teeth The number of teeth on this gear
+     * @param {number} bevel Tooth bevel
+     * @param {number} depth Tooth depth
+     * @param {number} [radiusHollow] An optional radius of a hollow region inside the gear
      * @returns {SVGGroup} The SVG element
      */
-    makeGear(x, y, radius) {
+    makeGear(
+        x,
+        y,
+        radius,
+        teeth,
+        bevel,
+        depth,
+        radiusHollow = -1) {
         const group = this.makePartGroup(x, y);
         const element = document.createElementNS(this.uri, "path");
-        const teeth = 14;
-        const bevel = 0.07;
-        const depth = .17;
         const radiusInner = radius - depth * .5;
         const radiusOuter = radius + depth * .5;
         let path = "M" +
@@ -65,17 +73,19 @@ class SVGMaker {
                 (Math.sin(a3) * radiusInner).toFixed(4) + " ";
         }
 
-        // path += "M" + (radiusInner * .5).toFixed(4) + ",0";
-        // path += "A" +
-        //     (radiusInner * .5).toFixed(4) + "," +
-        //     (radiusInner * .5).toFixed(4) + " " +
-        //     "0 0 0 " +
-        //     (radiusInner * -.5).toFixed(4) + ",0";
-        // path += "A" +
-        //     (radiusInner * .5).toFixed(4) + "," +
-        //     (radiusInner * .5).toFixed(4) + " " +
-        //     "0 0 0 " +
-        //     (radiusInner * .5).toFixed(4) + ",0";
+        if (radiusHollow !== -1) {
+            path += "M" + radiusHollow.toFixed(4) + ",0";
+            path += "A" +
+                radiusHollow.toFixed(4) + "," +
+                radiusHollow.toFixed(4) + " " +
+                "0 0 0 " +
+                (-radiusHollow).toFixed(4) + ",0";
+            path += "A" +
+                radiusHollow.toFixed(4) + "," +
+                radiusHollow.toFixed(4) + " " +
+                "0 0 0 " +
+                radiusHollow.toFixed(4) + ",0";
+        }
 
         element.setAttributeNS(null, "d", path);
 
