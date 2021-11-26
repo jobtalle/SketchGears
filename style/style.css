@@ -1,3 +1,8 @@
+:root {
+    --color-background: #4d403b;
+    --part-shadow: drop-shadow(0 0 .1px var(--color-background));
+}
+
 body {
     margin: 0;
 }
@@ -10,20 +15,26 @@ body {
 #content {
     width: 100%;
     height: 100%;
+    background-color: var(--color-background);
+}
+
+#content g {
+    filter: var(--part-shadow);
 }
 
 #content .layer-0 {
-    fill: #a15d1e;
+    fill: #a4998a;
 }
 
 #content .layer-1 {
-    fill: #be8046;
-}
-
-#content .layer-2 {
     fill: #cca98a;
 }
 
+#content .layer-2 {
+    fill: #be8046;
+}
+
 #content .layer-3 {
-    fill: #a4998a;
+    fill: #a15d1e;
+    filter: none;
 }

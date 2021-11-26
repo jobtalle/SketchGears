@@ -2,6 +2,9 @@
  * A machine
  */
 class Machine {
+    static MAIN_SPEED = 50;
+    static SCALE = 12;
+
     /**
      * Construct a machine
      * @param {number} width The width in pixels
@@ -10,16 +13,16 @@ class Machine {
      * @param {Random} random A randomizer
      */
     constructor(width, height, svg, random) {
-        const scale = 80;
+        const scale = Math.min(width, height) / Machine.SCALE;
         const uri = svg.getAttribute("xmlns");
         const svgMaker = new SVGMaker(uri);
         const group = document.createElementNS(uri, "g");
 
-        this.root = new PartGear(0, 0, 12);
+        this.root = new PartGear(0, 0, 20);
 
         let levels = 3;
         let layer = 0;
-        let budget = new Budget(8, 5);
+        let budget = new Budget(17, 5);
         let open = [this.root];
         const all = [...open];
 
@@ -58,6 +61,6 @@ class Machine {
      * @param {number} dt The time delta in seconds
      */
     update(dt) {
-        this.root.rotate(80 * dt);
+        this.root.rotate(Machine.MAIN_SPEED * dt);
     }
 }

@@ -6,7 +6,8 @@ class PartGear extends Part {
     static SPACING = 0.02;
     static DEPTH = .15;
     static BEVEL = .07;
-    static CHILDREN = new Distribution(1, 7, 1.8);
+    static CHILDREN = new Distribution(2, 7, 1.8);
+    static HOLE_RADIUS = .1;
 
     /**
      * Construct a part
@@ -75,7 +76,7 @@ class PartGear extends Part {
             this.teeth,
             PartGear.BEVEL,
             PartGear.DEPTH,
-            .1);
+            PartGear.HOLE_RADIUS);
 
         svgMaker.setClass(this.gear.group, Part.CLASS_LAYER + layer.toString())
 
