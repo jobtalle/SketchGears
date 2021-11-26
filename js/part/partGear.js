@@ -6,6 +6,7 @@ class PartGear extends Part {
     static SPACING = 0.02;
     static DEPTH = .15;
     static BEVEL = .07;
+    static CHILDREN = new Distribution(1, 7, 1.8);
 
     /**
      * Construct a part
@@ -109,12 +110,14 @@ class PartGear extends Part {
      * @param {Part[]} allParts The array all parts except the parts in this layer
      */
     reproduce(budget, newParts, allParts) {
-        const gearCount = Math.min(Math.round(Math.random() * 2 + 1), budget.parts);
+        const gearCount = Math.min(budget.parts, PartGear.CHILDREN.evaluate(Math.random()));
 
         for (let i = 0; i < gearCount; ++i) {
             const gear = this.reproduceGear();
 
-            if (gear.fits(newParts) && gear.fitsOverlap(allParts)) {
+            if (gear.x * gear.x + gear.y * gear.y < budget.radius * budget.radius &&
+                gear.fits(newParts) &&
+                gear.fitsOverlap(allParts)) {
                 this.gears.push(gear);
 
                 newParts.push(gear);

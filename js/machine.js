@@ -19,7 +19,7 @@ class Machine {
 
         let levels = 3;
         let layer = 0;
-        let budget = new Budget(8);
+        let budget = new Budget(8, 5);
         let open = [this.root];
         const all = [...open];
 
