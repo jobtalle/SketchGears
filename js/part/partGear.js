@@ -61,12 +61,13 @@ class PartGear extends Part {
 
     /**
      * Make the element for this part
+     * @param {number} layer The layer number starting at zero
      * @param {SVGMaker} svgMaker An SVG maker
      * @param {SVGGElement} layerMoving The moving parts layer
      * @param {SVGGElement} layerForeground The foreground layer
      * @returns {Part} This part
      */
-    makeElement(svgMaker, layerMoving, layerForeground) {
+    makeElement(layer, svgMaker, layerMoving, layerForeground) {
         this.gear = svgMaker.makeGear(
             this.x,
             this.y,
@@ -74,9 +75,11 @@ class PartGear extends Part {
             this.teeth,
             PartGear.BEVEL,
             PartGear.DEPTH,
-            this.radius - PartGear.BEVEL - PartGear.DEPTH);
+            this.radius - PartGear.DEPTH * 2);
 
-        layerMoving.appendChild(this.gear.group);
+        svgMaker.setClass(this.gear.group, Part.CLASS_LAYER + layer.toString())
+
+        layerMoving.insertBefore(this.gear.group, layerMoving.children[0]);
 
         return this;
     }
@@ -103,25 +106,21 @@ class PartGear extends Part {
     /**
      * Create a new generation of parts
      * @param {Budget} budget A part budget
-     * @param {Part[]} others Other parts to avoid
-     * @returns {Part[]} An array of parts
+     * @param {Part[]} newParts The array of new parts for this layer
      */
-    reproduce(budget, others) {
+    reproduce(budget, newParts) {
         const gearCount = Math.min(Math.round(Math.random() * 2 + 1), budget.parts);
-        const parts = [];
 
         for (let i = 0; i < gearCount; ++i) {
             const gear = this.reproduceGear();
 
-            if (this.fits(gear, others)) {
+            if (gear.fits(newParts)) {
                 this.gears.push(gear);
 
-                parts.push(gear);
+                newParts.push(gear);
+
+                --budget.parts;
             }
         }
-
-        budget.parts -= gearCount;
-
-        return parts;
     }
 }

@@ -21,6 +21,15 @@ class SVGMaker {
     }
 
     /**
+     * Set the class name for an SVG element
+     * @param {SVGElement} group The SVG element
+     * @param {string} className The class name
+     */
+    setClass(group, className) {
+        group.setAttributeNS(null, "class", className);
+    }
+
+    /**
      * Make a gear
      * @param {number} x The world X coordinate
      * @param {number} y The world Y coordinate

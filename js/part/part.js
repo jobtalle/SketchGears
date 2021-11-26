@@ -2,6 +2,8 @@
  * A machine part
  */
 class Part {
+    static CLASS_LAYER = "layer-";
+
     /**
      * Construct a part
      * @param {number} x The X position on the grid
@@ -11,17 +13,18 @@ class Part {
     constructor(x, y, radius) {
         this.x = x;
         this.y = y;
-        this.radius = radius;
+        this.collisionRadius = radius;
     }
 
     /**
      * Make the element for this part
+     * @param {number} layer The layer number starting at zero
      * @param {SVGMaker} svgMaker An SVG maker
      * @param {SVGGElement} layerMoving The moving parts layer
      * @param {SVGGElement} layerForeground The foreground layer
      * @returns {Part} This part
      */
-    makeElement(svgMaker, layerMoving, layerForeground) {
+    makeElement(layer, svgMaker, layerMoving, layerForeground) {
         return this;
     }
 
@@ -31,13 +34,13 @@ class Part {
      * @param {Part[]} others Other parts to avoid
      * @returns {boolean} True if the part can be placed
      */
-    fits(part, others) {
+    fits(others) {
         for (const other of others) {
             const dx = other.x - this.x;
             const dy = other.y - this.y;
-            const r = other.radius + this.radius;
+            const d = other.collisionRadius + this.collisionRadius;
 
-            if (dx * dx + dy * dy < r * r)
+            if (dx * dx + dy * dy < d * d)
                 return false;
         }
 
@@ -47,10 +50,10 @@ class Part {
     /**
      * Create a new generation of parts
      * @param {Budget} budget A part budget
-     * @param {Part[]} others Other parts to avoid
+     * @param {Part[]} newParts The array of new parts for this layer
      * @returns {Part[]} An array of parts
      */
-    reproduce(budget, others) {
+    reproduce(budget, newParts) {
         return [];
     }
 }

@@ -11,3 +11,19 @@ body {
     width: 100%;
     height: 100%;
 }
+
+#content .layer-0 {
+    fill: #a15d1e;
+}
+
+#content .layer-1 {
+    fill: #be8046;
+}
+
+#content .layer-2 {
+    fill: #cca98a;
+}
+
+#content .layer-3 {
+    fill: #a4998a;
+}
