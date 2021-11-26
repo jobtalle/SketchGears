@@ -4,6 +4,8 @@
 class PartGear extends Part {
     static TOOTH_STRIDE = .075;
     static SPACING = 0.02;
+    static DEPTH = .15;
+    static BEVEL = .07;
 
     /**
      * Construct a part
@@ -14,12 +16,14 @@ class PartGear extends Part {
      * @param {number} [offset] The gear offset in degrees
      */
     constructor(x, y, teeth, ratio = 1, offset = 0) {
-        super(x, y);
+        const radius = PartGear.getRadius(teeth);
+
+        super(x, y, radius);
 
         this.angle = 0;
         this.gear = null;
         this.teeth = teeth;
-        this.radius = PartGear.getRadius(teeth);
+        this.radius = radius;
         this.ratio = ratio;
         this.offset = offset;
 
@@ -63,7 +67,14 @@ class PartGear extends Part {
      * @returns {Part} This part
      */
     makeElement(svgMaker, layerMoving, layerForeground) {
-        this.gear = svgMaker.makeGear(this.x, this.y, this.radius, this.teeth, .07, .15, this.radius - .075 - .15);
+        this.gear = svgMaker.makeGear(
+            this.x,
+            this.y,
+            this.radius,
+            this.teeth,
+            PartGear.BEVEL,
+            PartGear.DEPTH,
+            this.radius - PartGear.BEVEL - PartGear.DEPTH);
 
         layerMoving.appendChild(this.gear.group);
 
@@ -77,33 +88,37 @@ class PartGear extends Part {
     reproduceGear() {
         const angleOffset = Math.random();
         const angle = angleOffset * Math.PI * 2;
-        const teeth = Math.round(8 + Math.random() * 10);
+        const teeth = Math.round(4 + Math.random() * 20);
         const radius = PartGear.getRadius(teeth);
         const ratio = this.teeth / teeth;
         const toothOffset = (teeth & 1) * 180 / teeth;
-        const gear = new PartGear(
+        return new PartGear(
             this.x + Math.cos(angle) * (this.radius + radius + PartGear.SPACING),
             this.y + Math.sin(angle) * (this.radius + radius + PartGear.SPACING),
             teeth,
             ratio,
             angleOffset * 360 + angleOffset * ratio * 360 + toothOffset - this.offset * ratio);
-
-        this.gears.push(gear);
-
-        return gear;
     }
 
     /**
      * Create a new generation of parts
      * @param {Budget} budget A part budget
+     * @param {Part[]} others Other parts to avoid
      * @returns {Part[]} An array of parts
      */
-    reproduce(budget) {
-        const gearCount = Math.min(Math.round(Math.random() * .3 + 1), budget.parts);
+    reproduce(budget, others) {
+        const gearCount = Math.min(Math.round(Math.random() * 2 + 1), budget.parts);
         const parts = [];
 
-        for (let i = 0; i < gearCount; ++i)
-            parts.push(this.reproduceGear());
+        for (let i = 0; i < gearCount; ++i) {
+            const gear = this.reproduceGear();
+
+            if (this.fits(gear, others)) {
+                this.gears.push(gear);
+
+                parts.push(gear);
+            }
+        }
 
         budget.parts -= gearCount;
 

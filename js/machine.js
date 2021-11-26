@@ -20,7 +20,7 @@ class Machine {
         this.root = new PartGear(0, 0, 16);
 
         let levels = 3;
-        let budget = new Budget(5);
+        let budget = new Budget(8);
         let open = [this.root];
 
         while (open.length > 0 && levels !== 0) {
@@ -31,7 +31,7 @@ class Machine {
                 part.makeElement(svgMaker, layerMoving, layerForeground);
 
             while (part = open.pop())
-                nextParts.push(...part.reproduce(budget));
+                nextParts.push(...part.reproduce(budget, nextParts));
 
             if (--levels === 0) {
                 for (const part of nextParts)
