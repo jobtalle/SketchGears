@@ -54,9 +54,10 @@ class Part {
         for (const other of others) {
             const dx = other.x - this.x;
             const dy = other.y - this.y;
+            const ds = dx * dx + dy * dy;
             const d = Math.max(other.collisionRadius, this.collisionRadius);
 
-            if (dx * dx + dy * dy < d * d)
+            if (ds < d * d)
                 return false;
         }
 

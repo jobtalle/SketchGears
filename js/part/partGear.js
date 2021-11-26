@@ -74,7 +74,7 @@ class PartGear extends Part {
             this.teeth,
             PartGear.BEVEL,
             PartGear.DEPTH,
-            this.radius - PartGear.DEPTH * 2);
+            .1);
 
         svgMaker.setClass(this.gear.group, Part.CLASS_LAYER + layer.toString())
 

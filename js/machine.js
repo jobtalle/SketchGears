@@ -15,7 +15,7 @@ class Machine {
         const svgMaker = new SVGMaker(uri);
         const group = document.createElementNS(uri, "g");
 
-        this.root = new PartGear(0, 0, 16);
+        this.root = new PartGear(0, 0, 12);
 
         let levels = 3;
         let layer = 0;

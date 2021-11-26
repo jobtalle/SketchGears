@@ -52,9 +52,7 @@ class SVGMaker {
         const element = document.createElementNS(this.uri, "path");
         const radiusInner = radius - depth * .5;
         const radiusOuter = radius + depth * .5;
-        let path = "M" +
-            (Math.cos(Math.PI * 2 * (teeth - bevel)) * radiusInner).toFixed(4) + "," +
-            (Math.sin(Math.PI * 2 * (teeth - bevel)) * radiusInner).toFixed(4) + " ";
+        let path = "M" + radiusInner.toFixed(4) + ",0 ";
 
         for (let tooth = 0; tooth < teeth; ++tooth) {
             const a0 = Math.PI * 2 * (tooth + .5 - bevel) / teeth;
@@ -77,9 +75,13 @@ class SVGMaker {
                 "0 0 1 " +
                 (Math.cos(a2) * radiusOuter).toFixed(4) + "," +
                 (Math.sin(a2) * radiusOuter).toFixed(4) + " ";
-            path += "L" +
-                (Math.cos(a3) * radiusInner).toFixed(4) + "," +
-                (Math.sin(a3) * radiusInner).toFixed(4) + " ";
+
+            if (tooth !== teeth - 1)
+                path += "L" +
+                    (Math.cos(a3) * radiusInner).toFixed(4) + "," +
+                    (Math.sin(a3) * radiusInner).toFixed(4) + " ";
+            else
+                path += "Z";
         }
 
         if (radiusHollow !== -1) {
