@@ -67,10 +67,11 @@ class Part {
     /**
      * Create a new generation of parts
      * @param {Budget} budget A part budget
+     * @param {Random} random A randomizer
      * @param {Part[]} newParts The array of new parts for this layer
      * @param {Part[]} allParts The array all parts except the parts in this layer
      */
-    reproduce(budget, newParts, allParts) {
+    reproduce(budget, random, newParts, allParts) {
 
     }
 
