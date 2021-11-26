@@ -20,6 +20,6 @@ class Distribution {
      * @returns {number} The distribution for this random value
      */
     evaluate(random) {
-        return this.min + (this.max * this.min) * Math.pow(random, this.power);
+        return this.min + (this.max - this.min) * Math.pow(random, this.power);
     }
 }

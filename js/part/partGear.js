@@ -7,7 +7,9 @@ class PartGear extends Part {
     static DEPTH = .15;
     static BEVEL = .07;
     static CHILDREN = new Distribution(2, 7, 1.8);
+    static CHILD_TEETH = new Distribution(4, 27, 1.2);
     static HOLE_RADIUS = .1;
+    static SECOND_GEAR_CHANCE = .6;
 
     /**
      * Construct a part
@@ -16,8 +18,15 @@ class PartGear extends Part {
      * @param {number} teeth The number of teeth
      * @param {number} [ratio] The transmission ratio
      * @param {number} [offset] The gear offset in degrees
+     * @param {boolean} [isSecondary] True if this gear is secondary
      */
-    constructor(x, y, teeth, ratio = 1, offset = 0) {
+    constructor(
+        x,
+        y,
+        teeth,
+        ratio = 1,
+        offset = 0,
+        isSecondary = false) {
         const radius = PartGear.getRadius(teeth);
 
         super(x, y, radius + PartGear.DEPTH * .5 + PartGear.SPACING);
@@ -28,8 +37,10 @@ class PartGear extends Part {
         this.radius = radius;
         this.ratio = ratio;
         this.offset = offset;
+        this.isSecondary = isSecondary;
 
-        this.gears = [];
+        this.children = [];
+        this.secondGear = null;
     }
 
     /**
@@ -57,8 +68,10 @@ class PartGear extends Part {
         this.gear.angle = this.angle + this.offset;
         this.gear.updateTransform();
 
-        for (const gear of this.gears)
+        for (const gear of this.children)
             gear.rotate(-delta * this.ratio);
+
+        this.secondGear?.rotate(delta * this.ratio);
     }
 
     /**
@@ -92,10 +105,11 @@ class PartGear extends Part {
     reproduceGear() {
         const angleOffset = Math.random();
         const angle = angleOffset * Math.PI * 2;
-        const teeth = Math.round(4 + Math.random() * 20);
+        const teeth = Math.round(PartGear.CHILD_TEETH.evaluate(Math.random()));
         const radius = PartGear.getRadius(teeth);
         const ratio = this.teeth / teeth;
         const toothOffset = (teeth & 1) * 180 / teeth;
+
         return new PartGear(
             this.x + Math.cos(angle) * (this.radius + radius + PartGear.SPACING),
             this.y + Math.sin(angle) * (this.radius + radius + PartGear.SPACING),
@@ -111,20 +125,47 @@ class PartGear extends Part {
      * @param {Part[]} allParts The array all parts except the parts in this layer
      */
     reproduce(budget, newParts, allParts) {
-        const gearCount = Math.min(budget.parts, PartGear.CHILDREN.evaluate(Math.random()));
-
-        for (let i = 0; i < gearCount; ++i) {
-            const gear = this.reproduceGear();
+        if (!this.isSecondary &&
+            budget.parts !== 0 &&
+            this.teeth * 2 <= PartGear.CHILD_TEETH.max &&
+            Math.random() < PartGear.SECOND_GEAR_CHANCE) {
+            const gear = new PartGear(this.x, this.y, this.teeth * 2, 1, 0, true);
 
             if (gear.x * gear.x + gear.y * gear.y < budget.radius * budget.radius &&
-                gear.fits(newParts) &&
-                gear.fitsOverlap(allParts)) {
-                this.gears.push(gear);
+                gear.fits(newParts)) {
+                this.secondGear = gear;
 
                 newParts.push(gear);
 
                 --budget.parts;
             }
         }
+        else {
+            const gearCount = Math.min(budget.parts, PartGear.CHILDREN.evaluate(Math.random()));
+
+            for (let i = 0; i < gearCount; ++i) {
+                const gear = this.reproduceGear();
+
+                if (gear.x * gear.x + gear.y * gear.y < budget.radius * budget.radius &&
+                    gear.fits(newParts) &&
+                    gear.fitsOverlap(allParts)) {
+                    this.children.push(gear);
+
+                    newParts.push(gear);
+
+                    --budget.parts;
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Trim unused parts
+     * @param {SVGGElement} group The SVG group that contains all parts
+     */
+    trim(group) {
+        if (this.isSecondary && this.children.length === 0)
+            group.removeChild(this.gear.group);
     }
 }

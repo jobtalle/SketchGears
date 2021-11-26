@@ -18,23 +18,29 @@ body {
     background-color: var(--color-background);
 }
 
-#content g {
-    filter: var(--part-shadow);
-}
-
 #content .layer-0 {
-    fill: #a4998a;
+    fill: #dec4af;
+    filter: var(--part-shadow);
 }
 
 #content .layer-1 {
     fill: #cca98a;
+    filter: var(--part-shadow);
 }
 
 #content .layer-2 {
     fill: #be8046;
+    filter: var(--part-shadow);
 }
 
 #content .layer-3 {
-    fill: #a15d1e;
-    filter: none;
+    fill: #9d632e;
+}
+
+#content .layer-4 {
+    fill: #804e2b;
+}
+
+#content .layer-5 {
+    fill: #674b36;
 }

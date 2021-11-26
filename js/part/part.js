@@ -73,4 +73,12 @@ class Part {
     reproduce(budget, newParts, allParts) {
 
     }
+
+    /**
+     * Trim unused parts
+     * @param {SVGGElement} group The SVG group that contains all parts
+     */
+    trim(group) {
+
+    }
 }

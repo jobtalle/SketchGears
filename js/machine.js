@@ -5,6 +5,7 @@ class Machine {
     static MAIN_SPEED = 50;
     static SCALE = 12;
     static MIN_PARTS = 8;
+    static LAYERS = 6;
 
     /**
      * Construct a machine
@@ -39,7 +40,7 @@ class Machine {
      * @returns {SVGGElement} The SVG group element
      */
     create(svgMaker) {
-        let levels = 3;
+        let levels = Machine.LAYERS - 1;
         let layer = 0;
         let budget = new Budget(17, 5);
         let open = [this.root];
@@ -53,7 +54,7 @@ class Machine {
             for (const part of open)
                 part.makeElement(layer, svgMaker, group);
 
-            while (part = open.pop())
+            while (budget.parts !== 0 && (part = open.pop()))
                 part.reproduce(budget, nextParts, all);
 
             if (--levels === 0) {
@@ -62,11 +63,15 @@ class Machine {
             }
             else {
                 open = nextParts;
-                all.push(...nextParts);
 
                 ++layer;
             }
+
+            all.push(...nextParts);
         }
+
+        for (const part of all)
+            part.trim(group);
 
         return group;
     }
