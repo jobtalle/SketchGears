@@ -4,7 +4,7 @@
 class Machine {
     static MAIN_SPEED = 50;
     static SCALE = 12;
-    static LAYERS = 6;
+    static LAYERS = 7;
     static MOUSE_SPEED = .003;
     static MIN_PARTS = 16;
     static MAX_PARTS = 40;
