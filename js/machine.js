@@ -4,6 +4,7 @@
 class Machine {
     static MAIN_SPEED = 50;
     static SCALE = 12;
+    static MIN_PARTS = 8;
 
     /**
      * Construct a machine
@@ -16,15 +17,34 @@ class Machine {
         const scale = Math.min(width, height) / Machine.SCALE;
         const uri = svg.getAttribute("xmlns");
         const svgMaker = new SVGMaker(uri);
-        const group = document.createElementNS(uri, "g");
 
         this.root = new PartGear(0, 0, 20);
 
+        let group = this.create(svgMaker);
+
+        while (group.childElementCount < Machine.MIN_PARTS)
+            group = this.create(svgMaker);
+
+        group.setAttribute("transform",
+            "translate(" +
+            (width * .5).toString() + "," +
+            (height * .5).toString() + ")" +
+            "scale(" + scale.toString() + ")");
+        svg.appendChild(group);
+    }
+
+    /**
+     * Create a machine
+     * @param {SVGMaker} svgMaker An SVG maker
+     * @returns {SVGGElement} The SVG group element
+     */
+    create(svgMaker) {
         let levels = 3;
         let layer = 0;
         let budget = new Budget(17, 5);
         let open = [this.root];
         const all = [...open];
+        const group = document.createElementNS(svgMaker.uri, "g");
 
         while (open.length > 0 && levels !== 0) {
             const nextParts = [];
@@ -48,12 +68,7 @@ class Machine {
             }
         }
 
-        group.setAttribute("transform",
-            "translate(" +
-            (width * .5).toString() + "," +
-            (height * .5).toString() + ")" +
-            "scale(" + scale.toString() + ")");
-        svg.appendChild(group);
+        return group;
     }
 
     /**
