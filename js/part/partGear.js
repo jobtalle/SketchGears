@@ -18,7 +18,7 @@ class PartGear extends Part {
     constructor(x, y, teeth, ratio = 1, offset = 0) {
         const radius = PartGear.getRadius(teeth);
 
-        super(x, y, radius);
+        super(x, y, radius + PartGear.DEPTH * .5 + PartGear.SPACING);
 
         this.angle = 0;
         this.gear = null;
@@ -107,14 +107,15 @@ class PartGear extends Part {
      * Create a new generation of parts
      * @param {Budget} budget A part budget
      * @param {Part[]} newParts The array of new parts for this layer
+     * @param {Part[]} allParts The array all parts except the parts in this layer
      */
-    reproduce(budget, newParts) {
+    reproduce(budget, newParts, allParts) {
         const gearCount = Math.min(Math.round(Math.random() * 2 + 1), budget.parts);
 
         for (let i = 0; i < gearCount; ++i) {
             const gear = this.reproduceGear();
 
-            if (gear.fits(newParts)) {
+            if (gear.fits(newParts) && gear.fitsOverlap(allParts)) {
                 this.gears.push(gear);
 
                 newParts.push(gear);
