@@ -20,11 +20,10 @@ class Part {
      * Make the element for this part
      * @param {number} layer The layer number starting at zero
      * @param {SVGMaker} svgMaker An SVG maker
-     * @param {SVGGElement} layerMoving The moving parts layer
-     * @param {SVGGElement} layerForeground The foreground layer
+     * @param {SVGGElement} group The SVG group to add parts on
      * @returns {Part} This part
      */
-    makeElement(layer, svgMaker, layerMoving, layerForeground) {
+    makeElement(layer, svgMaker, group) {
         return this;
     }
 

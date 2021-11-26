@@ -13,9 +13,7 @@ class Machine {
         const scale = 80;
         const uri = svg.getAttribute("xmlns");
         const svgMaker = new SVGMaker(uri);
-        const layerContainer = document.createElementNS(uri, "g");
-        const layerMoving = document.createElementNS(uri, "g");
-        const layerForeground = document.createElementNS(uri, "g");
+        const group = document.createElementNS(uri, "g");
 
         this.root = new PartGear(0, 0, 16);
 
@@ -30,14 +28,14 @@ class Machine {
             let part = null;
 
             for (const part of open)
-                part.makeElement(layer, svgMaker, layerMoving, layerForeground);
+                part.makeElement(layer, svgMaker, group);
 
             while (part = open.pop())
                 part.reproduce(budget, nextParts, all);
 
             if (--levels === 0) {
                 for (const part of nextParts)
-                    part.makeElement(layer + 1, svgMaker, layerMoving, layerForeground);
+                    part.makeElement(layer + 1, svgMaker, group);
             }
             else {
                 open = nextParts;
@@ -47,14 +45,12 @@ class Machine {
             }
         }
 
-        layerContainer.setAttribute("transform",
+        group.setAttribute("transform",
             "translate(" +
             (width * .5).toString() + "," +
             (height * .5).toString() + ")" +
             "scale(" + scale.toString() + ")");
-        layerContainer.appendChild(layerMoving);
-        layerContainer.appendChild(layerForeground);
-        svg.appendChild(layerContainer);
+        svg.appendChild(group);
     }
 
     /**
