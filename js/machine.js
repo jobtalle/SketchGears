@@ -4,8 +4,9 @@
 class Machine {
     static MAIN_SPEED = 50;
     static SCALE = 12;
-    static MIN_PARTS = 8;
+    static MIN_PARTS = 12;
     static LAYERS = 6;
+    static MOUSE_SPEED = .003;
 
     /**
      * Construct a machine
@@ -20,8 +21,10 @@ class Machine {
         const svgMaker = new SVGMaker(uri);
 
         this.root = new PartGear(0, 0, 20);
+        this.dragging = false;
 
         let group = this.create(svgMaker);
+        let mx = 0;
 
         while (group.childElementCount < Machine.MIN_PARTS)
             group = this.create(svgMaker);
@@ -32,6 +35,26 @@ class Machine {
             (height * .5).toString() + ")" +
             "scale(" + scale.toString() + ")");
         svg.appendChild(group);
+
+        svg.addEventListener("mousedown", event => {
+            mx = event.clientX;
+
+            this.dragging = true;
+        });
+
+        svg.addEventListener("mousemove", event => {
+            if (this.dragging) {
+                const dx = event.clientX - mx;
+
+                this.root.rotate(Machine.MOUSE_SPEED * Machine.MAIN_SPEED * dx);
+
+                mx = event.clientX;
+            }
+        });
+
+        svg.addEventListener("mouseup", () => {
+            this.dragging = false;
+        });
     }
 
     /**
@@ -81,6 +104,7 @@ class Machine {
      * @param {number} dt The time delta in seconds
      */
     update(dt) {
-        this.root.rotate(Machine.MAIN_SPEED * dt);
+        if (!this.dragging)
+            this.root.rotate(Machine.MAIN_SPEED * dt);
     }
 }

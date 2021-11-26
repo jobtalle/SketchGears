@@ -10,6 +10,7 @@ class PartGear extends Part {
     static CHILD_TEETH = new Distribution(4, 27, 1.2);
     static HOLE_RADIUS = .1;
     static SECOND_GEAR_CHANCE = .6;
+    static SECOND_GEAR_SCALE = new Distribution(1.6, 2.5, 1.5);
 
     /**
      * Construct a part
@@ -127,17 +128,20 @@ class PartGear extends Part {
     reproduce(budget, newParts, allParts) {
         if (!this.isSecondary &&
             budget.parts !== 0 &&
-            this.teeth * 2 <= PartGear.CHILD_TEETH.max &&
             Math.random() < PartGear.SECOND_GEAR_CHANCE) {
-            const gear = new PartGear(this.x, this.y, this.teeth * 2, 1, 0, true);
+            const secondGearTeeth = Math.round(this.teeth * PartGear.SECOND_GEAR_SCALE.evaluate(Math.random()));
 
-            if (gear.x * gear.x + gear.y * gear.y < budget.radius * budget.radius &&
-                gear.fits(newParts)) {
-                this.secondGear = gear;
+            if (secondGearTeeth < PartGear.CHILD_TEETH.max) {
+                const gear = new PartGear(this.x, this.y, secondGearTeeth, 1, 0, true);
 
-                newParts.push(gear);
+                if (gear.x * gear.x + gear.y * gear.y < budget.radius * budget.radius &&
+                    gear.fits(newParts)) {
+                    this.secondGear = gear;
 
-                --budget.parts;
+                    newParts.push(gear);
+
+                    --budget.parts;
+                }
             }
         }
         else {
@@ -165,7 +169,10 @@ class PartGear extends Part {
      * @param {SVGGElement} group The SVG group that contains all parts
      */
     trim(group) {
-        if (this.isSecondary && this.children.length === 0)
-            group.removeChild(this.gear.group);
+        if (this.secondGear && this.secondGear.children.length === 0) {
+            group.removeChild(this.secondGear.gear.group);
+
+            this.secondGear = null;
+        }
     }
 }
