@@ -11,7 +11,7 @@ class Random {
      * @returns {number} A valid random seed
      */
     static makeSeed() {
-        return Math.floor(fxrand() * Random.MODULUS);
+        return Math.floor(Math.random() * Random.MODULUS);
     }
 
     /**

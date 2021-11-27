@@ -2,14 +2,14 @@
  * A machine
  */
 class Machine {
-    static MAIN_SPEED = 50;
+    static MAIN_SPEED = 60;
     static SCALE = 12;
     static LAYERS = 7;
     static MOUSE_SPEED = .003;
     static MIN_PARTS = 16;
     static MAX_PARTS = 40;
     static RADIUS = 4.7;
-    static ROOT_TEETH = 20;
+    static ROOT_TEETH = 15;
 
     /**
      * Construct a machine
@@ -23,7 +23,7 @@ class Machine {
         const uri = svg.getAttribute("xmlns");
         const svgMaker = new SVGMaker(uri);
 
-        this.root = new PartGear(0, 0, Machine.ROOT_TEETH);
+        this.root = new PartGear(0, 0, Machine.ROOT_TEETH, 1, 0, true);
         this.sign = random.float < .5 ? -1 : 1;
         this.dragging = false;
 

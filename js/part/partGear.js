@@ -6,11 +6,12 @@ class PartGear extends Part {
     static SPACING = 0.02;
     static DEPTH = .15;
     static BEVEL = .07;
-    static CHILDREN = new Distribution(3, 8, 1.8);
-    static CHILD_TEETH = new Distribution(4, 22, 1.2);
+    static CHILDREN = new Distribution(3, 19, 1.4);
+    static CHILD_TEETH = new Distribution(5, 22, 1.2);
     static HOLE_RADIUS = .1;
     static SECOND_GEAR_CHANCE = .6;
-    static SECOND_GEAR_SCALE = new Distribution(1.7, 2.3, 1.5);
+    static SECOND_GEAR_SCALE = new Distribution(1.7, 3.5, 1.5);
+    static RADIUS_FALLOFF = 1;
 
     /**
      * Construct a part
@@ -102,12 +103,13 @@ class PartGear extends Part {
     /**
      * Make a connecting gear
      * @param {Random} random A randomizer
+     * @param {number} distanceFactor A factor in the range [0, 1] depending on the distance to the center
      * @returns {PartGear} A new gear
      */
-    reproduceGear(random) {
+    reproduceGear(random, distanceFactor) {
         const angleOffset = random.float;
         const angle = angleOffset * Math.PI * 2;
-        const teeth = Math.round(PartGear.CHILD_TEETH.evaluate(random.float));
+        const teeth = Math.round(PartGear.CHILD_TEETH.evaluate(random.float * Math.sqrt(distanceFactor)));
         const radius = PartGear.getRadius(teeth);
         const ratio = this.teeth / teeth;
         const toothOffset = (teeth & 1) * 180 / teeth;
@@ -150,7 +152,10 @@ class PartGear extends Part {
             const gearCount = Math.min(budget.parts, PartGear.CHILDREN.evaluate(random.float));
 
             for (let i = 0; i < gearCount; ++i) {
-                const gear = this.reproduceGear(random);
+                const gear = this.reproduceGear(
+                    random,
+                    1 - PartGear.RADIUS_FALLOFF *
+                        Math.sqrt(this.x * this.x + this.y * this.y) / budget.radius);
 
                 if (gear.x * gear.x + gear.y * gear.y < budget.radius * budget.radius &&
                     gear.fits(newParts) &&
